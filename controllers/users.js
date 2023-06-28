@@ -63,7 +63,7 @@ const createUser = (req, res) => {
 };
 
 const updateProfile = (req, res) => {
-  User.findByIdAndUpdate(req.params.user_id, req.body)
+  User.findByIdAndUpdate(req.user._id, req.body)
     .then((user) => {
       if (!user) {
         res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
@@ -87,7 +87,7 @@ const updateProfile = (req, res) => {
 };
 
 const updateAvatar = (req, res) => {
-  User.findByIdAndUpdate(req.params.user_id, req.body)
+  User.findByIdAndUpdate(req.user._id, req.body)
     .then((user) => {
       if (!user) {
         res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
