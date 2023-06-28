@@ -1,6 +1,11 @@
 const cardModel = require('../models/card');
 
-const { CREATED, ERROR_CODE, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/statusCode');
+const {
+  CREATED,
+  ERROR_CODE,
+  NOT_FOUND,
+  INTERNAL_SERVER_ERROR
+} = require('../utils/statusCode');
 
 const getCards = (req, res) => {
   cardModel.find({})
@@ -11,9 +16,9 @@ const getCards = (req, res) => {
       res.status(INTERNAL_SERVER_ERROR).send({
         message: 'Внутренняя ошибка сервера',
         err: err.message,
-        stack: err.stack
+        stack: err.stack,
       });
-    })
+    });
 };
 
 const createCard = (req, res) => {
@@ -29,7 +34,7 @@ const createCard = (req, res) => {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Внутренняя ошибка сервера',
           err: err.message,
-          stack: err.stack
+          stack: err.stack,
         })
       }
     })
@@ -72,12 +77,12 @@ const likeCard = (req, res) => {
       if (err.name = 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id карточка не найдена' });
       } else {
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Внутренняя ошибка сервера',
-        err: err.message,
-        stack: err.stack
-      })
-    }
+        res.status(INTERNAL_SERVER_ERROR).send({
+          message: 'Внутренняя ошибка сервера',
+          err: err.message,
+          stack: err.stack
+        })
+      }
     })
 };
 
@@ -97,12 +102,12 @@ const dislikeCard = (req, res) => {
       if (err.name = 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id карточка не найдена' });
       } else {
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Внутренняя ошибка сервера',
-        err: err.message,
-        stack: err.stack
-      })
-    }
+        res.status(INTERNAL_SERVER_ERROR).send({
+          message: 'Внутренняя ошибка сервера',
+          err: err.message,
+          stack: err.stack
+        })
+      }
     })
 };
 

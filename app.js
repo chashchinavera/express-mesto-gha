@@ -15,10 +15,10 @@ app.use(cardRouter);
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '649c26404372dddcd665594d'
+    _id: '649c26404372dddcd665594d',
   };
 
   next();
 });
 
-app.listen(PORT);
+app.listen(PORT)
