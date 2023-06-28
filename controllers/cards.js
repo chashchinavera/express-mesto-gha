@@ -44,8 +44,9 @@ const deleteCard = (req, res) => {
   cardModel.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
-      };
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
+        return;
+      }
       res.send({ data: card });
     })
     .catch((err) => {
@@ -55,10 +56,10 @@ const deleteCard = (req, res) => {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Внутренняя ошибка сервера',
           err: err.message,
-          stack: err.stack
-        })
+          stack: err.stack,
+        });
       }
-    })
+    });
 };
 
 const likeCard = (req, res) => {
@@ -69,7 +70,8 @@ const likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
+        return;
       }
       res.send({ data: card });
     })
@@ -80,10 +82,10 @@ const likeCard = (req, res) => {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Внутренняя ошибка сервера',
           err: err.message,
-          stack: err.stack
-        })
+          stack: err.stack,
+        });
       }
-    })
+    });
 };
 
 const dislikeCard = (req, res) => {
@@ -94,21 +96,22 @@ const dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
+        return;
       }
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name = 'CastError') {
+      if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id карточка не найдена' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Внутренняя ошибка сервера',
           err: err.message,
-          stack: err.stack
-        })
+          stack: err.stack,
+        });
       }
-    })
+    });
 };
 
 module.exports = {

@@ -13,14 +13,15 @@ const getUsers = (req, res) => {
         err: err.message,
         stack: err.stack
       });
-    })
+    });
 };
 
 const getUserById = (req, res) => {
   userModel.findById(req.params.user_id)
     .then((user) => {
       if (!user) {
-        return res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' })
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
+        return;
       };
       res.send({ data: user });
     })
@@ -31,10 +32,10 @@ const getUserById = (req, res) => {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Внутренняя ошибка сервера',
           err: err.message,
-          stack: err.stack
+          stack: err.stack,
         });
       }
-    })
+    });
 };
 
 const createUser = (req, res) => {
@@ -50,17 +51,18 @@ const createUser = (req, res) => {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Внутренняя ошибка сервера',
           err: err.message,
-          stack: err.stack
-        })
+          stack: err.stack,
+        });
       }
-    })
+    });
 };
 
 const updateProfile = (req, res) => {
   User.findByIdAndUpdate(req.user._id, req.body)
     .then((user) => {
       if (!user) {
-        return res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
+        return;
       }
       res.send({ data: user });
     })
@@ -73,17 +75,18 @@ const updateProfile = (req, res) => {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Внутренняя ошибка сервера',
           err: err.message,
-          stack: err.stack
-        })
+          stack: err.stack,
+        });
       }
-    })
+    });
 };
 
 const updateAvatar = (req, res) => {
   User.findByIdAndUpdate(req.user._id, req.body)
     .then((user) => {
       if (!user) {
-        return res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
+        return;
       }
       res.send({ data: user });
     })
@@ -96,10 +99,10 @@ const updateAvatar = (req, res) => {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Внутренняя ошибка сервера',
           err: err.message,
-          stack: err.stack
-        })
+          stack: err.stack,
+        });
       }
-    })
+    });
 };
 
 
