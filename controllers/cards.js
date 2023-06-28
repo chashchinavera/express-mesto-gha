@@ -53,10 +53,10 @@ const deleteCard = (req, res) => {
       }
       res.send({ data: card });
     })
-    .catch((err) => {
-        res.status(ERROR_CODE).send({ message: 'По указанному id карточка не найдена' });
+    .catch(() => {
+      res.status(ERROR_CODE).send({ message: 'По указанному id карточка не найдена' });
     });
-    };
+};
 
 const likeCard = (req, res) => {
   cardModel.findByIdAndUpdate(
