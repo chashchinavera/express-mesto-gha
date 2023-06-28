@@ -46,15 +46,25 @@ const createCard = (req, res) => {
 
 const deleteCard = (req, res) => {
   cardModel.findByIdAndRemove(req.params.cardId)
+    .orFail(new Error('Not found'))
     .then((card) => {
       if (!card) {
-        res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
         return;
       }
       res.send({ data: card });
     })
-    .catch(() => {
-      res.status(ERROR_CODE).send({ message: 'По указанному id карточка не найдена' });
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(ERROR_CODE).send({ message: 'По указанному id карточка не найдена' });
+      } else if (err.message === 'Not found') {
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({
+          message: 'Внутренняя ошибка сервера',
+          err: err.message,
+          stack: err.stack,
+        });
+      }
     });
 };
 
@@ -64,16 +74,15 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(new Error('Not found'))
     .then((card) => {
-      if (!card) {
-        res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
-      }
       res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id карточка не найдена' });
+      } else if (err.message === 'Not found') {
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Внутренняя ошибка сервера',
@@ -90,16 +99,15 @@ const dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(new Error('Not found'))
     .then((card) => {
-      if (!card) {
-        res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
-      }
       res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id карточка не найдена' });
+      } else  if (err.message === 'Not found') {
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Внутренняя ошибка сервера',

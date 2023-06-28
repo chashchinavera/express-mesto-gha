@@ -27,19 +27,22 @@ const getUsers = (req, res) => {
 
 const getUserById = (req, res) => {
   userModel.findById(req.params.user_id)
+    .orFail(new Error('Not found'))
     .then((user) => {
-      if (!user) {
-        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
-        return;
-      }
       res.send({ data: user });
     })
     .catch((err) => {
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Внутренняя ошибка сервера',
-        err: err.message,
-        stack: err.stack,
-      });
+      if (err.name === 'CastError') {
+        res.status(ERROR_CODE).send({ message: 'По указанному id пользователь не найден' });
+      } else if (err.message === 'Not Found') {
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({
+          message: 'Внутренняя ошибка сервера',
+          err: err.message,
+          stack: err.stack,
+        });
+      }
     });
 };
 
@@ -64,11 +67,8 @@ const createUser = (req, res) => {
 
 const updateProfile = (req, res) => {
   userModel.findByIdAndUpdate(req.user._id, req.body)
+    .orFail(new Error('Not found'))
     .then((user) => {
-      if (!user) {
-        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
-        return;
-      }
       res.send({ data: user });
     })
     .catch((err) => {
@@ -76,6 +76,8 @@ const updateProfile = (req, res) => {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
       } else if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id пользователь не найден' });
+      } else if (err.message === 'Not Found') {
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Внутренняя ошибка сервера',
@@ -88,11 +90,8 @@ const updateProfile = (req, res) => {
 
 const updateAvatar = (req, res) => {
   userModel.findByIdAndUpdate(req.user._id, req.body)
+    .orFail(new Error('Not found'))
     .then((user) => {
-      if (!user) {
-        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
-        return;
-      }
       res.send({ data: user });
     })
     .catch((err) => {
@@ -100,6 +99,8 @@ const updateAvatar = (req, res) => {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
       } else if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id пользователь не найден' });
+      } else if (err.message === 'Not Found') {
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Внутренняя ошибка сервера',
