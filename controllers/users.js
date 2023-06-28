@@ -1,6 +1,11 @@
 const userModel = require('../models/user');
 
-const { CREATED, ERROR_CODE, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/statusCode');
+const {
+  CREATED,
+  ERROR_CODE,
+  NOT_FOUND,
+  INTERNAL_SERVER_ERROR,
+} = require('../utils/statusCode');
 
 const getUsers = (req, res) => {
   userModel.find({})
@@ -11,7 +16,7 @@ const getUsers = (req, res) => {
       res.status(INTERNAL_SERVER_ERROR).send({
         message: 'Внутренняя ошибка сервера',
         err: err.message,
-        stack: err.stack
+        stack: err.stack,
       });
     });
 };
@@ -22,7 +27,7 @@ const getUserById = (req, res) => {
       if (!user) {
         res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
         return;
-      };
+      }
       res.send({ data: user });
     })
     .catch((err) => {
@@ -69,7 +74,7 @@ const updateProfile = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-      } else if (err.name = 'CastError') {
+      } else if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id пользователь не найден' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
