@@ -25,7 +25,7 @@ const getUserById = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name = 'CastError') {
+      if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id пользователь не найден' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
@@ -44,7 +44,7 @@ const createUser = (req, res) => {
       res.status(CREATED).send({ data: user });
     })
     .catch((err) => {
-      if (err.name = 'ValidationError') {
+      if (err.name === 'ValidationError') {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
@@ -65,7 +65,7 @@ const updateProfile = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name = 'ValidationError') {
+      if (err.name === 'ValidationError') {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
       } else if (err.name = 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id пользователь не найден' });
@@ -88,7 +88,7 @@ const updateAvatar = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name = 'ValidationError') {
+      if (err.name === 'ValidationError') {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
       } else if (err.name = 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id пользователь не найден' });

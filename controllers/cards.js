@@ -4,7 +4,7 @@ const {
   CREATED,
   ERROR_CODE,
   NOT_FOUND,
-  INTERNAL_SERVER_ERROR
+  INTERNAL_SERVER_ERROR,
 } = require('../utils/statusCode');
 
 const getCards = (req, res) => {
@@ -28,28 +28,28 @@ const createCard = (req, res) => {
       res.status(CREATED).send({ data: card });
     })
     .catch((err) => {
-      if (err.name = 'ValidationError') {
+      if (err.name === 'ValidationError') {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Внутренняя ошибка сервера',
           err: err.message,
           stack: err.stack,
-        })
+        });
       }
-    })
+    });
 };
 
 const deleteCard = (req, res) => {
   cardModel.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND).send({ message: "Запрашиваемая карточка не найдена" })
+        return res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
       };
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name = 'CastError') {
+      if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id карточка не найдена' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
@@ -74,7 +74,7 @@ const likeCard = (req, res) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name = 'CastError') {
+      if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id карточка не найдена' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
