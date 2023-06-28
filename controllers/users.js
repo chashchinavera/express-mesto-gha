@@ -63,7 +63,7 @@ const createUser = (req, res) => {
 };
 
 const updateProfile = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, req.body)
+  User.findByIdAndUpdate(req.params.user_id, req.body)
     .then((user) => {
       if (!user) {
         res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
@@ -87,7 +87,7 @@ const updateProfile = (req, res) => {
 };
 
 const updateAvatar = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, req.body)
+  User.findByIdAndUpdate(req.params.user_id, req.body)
     .then((user) => {
       if (!user) {
         res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
@@ -98,7 +98,7 @@ const updateAvatar = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-      } else if (err.name = 'CastError') {
+      } else if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id пользователь не найден' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
@@ -110,12 +110,10 @@ const updateAvatar = (req, res) => {
     });
 };
 
-
-
 module.exports = {
   getUsers,
   getUserById,
   createUser,
   updateProfile,
-  updateAvatar
-}
+  updateAvatar,
+};

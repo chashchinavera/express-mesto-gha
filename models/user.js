@@ -5,21 +5,21 @@ name: {
   type: String,
   minlength: 2,
   maxlength: 30,
-  required: true
+  required: true,
 },
 about: {
   type: String,
   minlength: 2,
   maxlength: 30,
-  required: true
+  required: true,
 },
 avatar: {
   type: String,
-  required: true
+  required: true,
 },
 }, {
-  versionKey: false
+  versionKey: false,
 }
 );
 
-module.exports= mongoose.model('user', userSchema)
+module.exports= mongoose.model('user', userSchema);
