@@ -13,11 +13,15 @@ const getUsers = (req, res) => {
       res.send({ data: users });
     })
     .catch((err) => {
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Внутренняя ошибка сервера',
-        err: err.message,
-        stack: err.stack,
-      });
+      if (err.name === 'CastError') {
+        res.status(ERROR_CODE).send({ message: 'По указанному id пользователь не найден' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({
+          message: 'Внутренняя ошибка сервера',
+          err: err.message,
+          stack: err.stack,
+        });
+      }
     });
 };
 
@@ -31,15 +35,11 @@ const getUserById = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'По указанному id пользователь не найден' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'Внутренняя ошибка сервера',
-          err: err.message,
-          stack: err.stack,
-        });
-      }
+      res.status(INTERNAL_SERVER_ERROR).send({
+        message: 'Внутренняя ошибка сервера',
+        err: err.message,
+        stack: err.stack,
+      });
     });
 };
 

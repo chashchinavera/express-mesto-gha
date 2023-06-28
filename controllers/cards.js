@@ -13,11 +13,15 @@ const getCards = (req, res) => {
       res.send({ data: cards });
     })
     .catch((err) => {
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Внутренняя ошибка сервера',
-        err: err.message,
-        stack: err.stack,
-      });
+      if (err.name === 'ValidationError') {
+        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({
+          message: 'Внутренняя ошибка сервера',
+          err: err.message,
+          stack: err.stack,
+        });
+      }
     });
 };
 
@@ -50,17 +54,9 @@ const deleteCard = (req, res) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id карточка не найдена' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'Внутренняя ошибка сервера',
-          err: err.message,
-          stack: err.stack,
-        });
-      }
     });
-};
+    };
 
 const likeCard = (req, res) => {
   cardModel.findByIdAndUpdate(
