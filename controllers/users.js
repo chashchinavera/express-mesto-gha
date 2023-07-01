@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const userModel = require('../models/user');
-const {signToken} = require('../utils/jwtAuth').signToken;
+const { signToken } = require('../utils/jwtAuth').signToken;
 
 const {
   CREATED,
@@ -52,33 +52,43 @@ const getUserById = (req, res) => {
 };
 
 const createUser = (req, res) => {
-
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password
+  } = req.body;
 
   bcrypt.hash(password, 10)
 
-  .then(function (hash) {
-
-    userModel.create({ name, about, avatar, email, password: hash })
-      .then((user) => {
-
-        res.status(CREATED).send(user);
+    .then(function (hash) {
+      userModel.create({
+        name,
+        about,
+        avatar,
+        email,
+        password: hash
       })
-      .catch((err) => {
-        if (err.name === 'ValidationError') {
-          res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-        } else if (err.code === MONGO_DUPLICATE_KEY_ERROR) {
-          res.status(CONFLICT_ERROR).send({ message: 'Такой пользователь уже существует' });
-          return;
-        } else {
-          res.status(INTERNAL_SERVER_ERROR).send({
-            message: 'Внутренняя ошибка сервера',
-            err: err.message,
-            stack: err.stack,
-          });
-        }
-      });
-  });
+        .then((user) => {
+
+          res.status(CREATED).send(user);
+        })
+        .catch((err) => {
+          if (err.name === 'ValidationError') {
+            res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
+          } else if (err.code === MONGO_DUPLICATE_KEY_ERROR) {
+            res.status(CONFLICT_ERROR).send({ message: 'Такой пользователь уже существует' });
+            return;
+          } else {
+            res.status(INTERNAL_SERVER_ERROR).send({
+              message: 'Внутренняя ошибка сервера',
+              err: err.message,
+              stack: err.stack,
+            });
+          }
+        });
+    });
 };
 
 const updateProfile = (req, res, next) => {
