@@ -57,7 +57,7 @@ const createUser = (req, res) => {
     about,
     avatar,
     email,
-    password
+    password,
   } = req.body;
 
   bcrypt.hash(password, 10)
@@ -68,10 +68,9 @@ const createUser = (req, res) => {
         about,
         avatar,
         email,
-        password: hash
+        password: hash,
       })
         .then((user) => {
-
           res.status(CREATED).send(user);
         })
         .catch((err) => {
@@ -79,7 +78,6 @@ const createUser = (req, res) => {
             res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
           } else if (err.code === MONGO_DUPLICATE_KEY_ERROR) {
             res.status(CONFLICT_ERROR).send({ message: 'Такой пользователь уже существует' });
-            return;
           } else {
             res.status(INTERNAL_SERVER_ERROR).send({
               message: 'Внутренняя ошибка сервера',
@@ -144,7 +142,8 @@ const login = (req, res) => {
   userModel.findOne({ email }).select('+password')
     .orFail(new Error('Unauthorized'))
     .then((user) => {
-      return Promise.all([user, bcrypt.compare(password, user.password)]);
+      Promise.all([user, bcrypt.compare(password, user.password)]);
+      return;
     })
     .then(([user, isEqual]) => {
       if (!isEqual) {
@@ -154,7 +153,6 @@ const login = (req, res) => {
 
       const token = signToken({ _id: user._id });
       console.log(token);
-
 
       res.cookie('token', token, {
         httpOnly: true,
@@ -179,7 +177,6 @@ const getUser = (req, res, next) => {
   userModel.findById(req.user._id)
     .then((data) => {
       res.status(200).send({ data });
-
     })
     .catch(next);
 };
