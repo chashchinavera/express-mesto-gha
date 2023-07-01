@@ -143,7 +143,6 @@ const login = (req, res) => {
     .orFail(new Error('Unauthorized'))
     .then((user) => {
       Promise.all([user, bcrypt.compare(password, user.password)]);
-      return;
     })
     .then(([user, isEqual]) => {
       if (!isEqual) {
@@ -169,9 +168,9 @@ const login = (req, res) => {
         message: 'Внутренняя ошибка сервера',
         err: err.message,
         stack: err.stack,
-      })
+      });
     });
-}
+};
 
 const getUser = (req, res, next) => {
   userModel.findById(req.user._id)

@@ -1,7 +1,6 @@
-const checkToken = require('../utils/jwtAuth').checkToken;
+const { checkToken } = require('../utils/jwtAuth').checkToken;
 
 const auth = (req, res, next) => {
-
   if (!req.headers.authorization) {
     return res.status(401).send({ message: 'Пользователь не авторизован' });
   }
@@ -15,7 +14,6 @@ const auth = (req, res, next) => {
       _id: payload._id,
     };
     next();
-
   } catch (err) {
     return res.status(401).send({ message: 'Пользователь не авторизован' });
   }
