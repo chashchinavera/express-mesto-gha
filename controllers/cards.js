@@ -58,6 +58,9 @@ const deleteCard = (req, res) => {
         res.status(ERROR_CODE).send({ message: 'По указанному id карточка не найдена' });
       } else if (err.message === 'Not found') {
         res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
+      } else if (req.user._id === card.owner.toString()) {
+        return cardModel.findByIdAndRemove(req.params.cardId)
+          .then(() => res.status(200).send({ message: 'Карточка удалена' }));
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Внутренняя ошибка сервера',
@@ -106,7 +109,7 @@ const dislikeCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id карточка не найдена' });
-      } else  if (err.message === 'Not found') {
+      } else if (err.message === 'Not found') {
         res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
