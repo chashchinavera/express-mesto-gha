@@ -58,7 +58,7 @@ const deleteCard = (req, res) => {
         res.status(ERROR_CODE).send({ message: 'По указанному id карточка не найдена' });
       } else if (err.message === 'Not found') {
         res.status(NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
-      } else if (req.user._id === card.owner.toString()) {
+      } else if (req.user._id === cardModel.owner.toString()) {
         return cardModel.findByIdAndRemove(req.params.cardId)
           .then(() => res.status(200).send({ message: 'Карточка удалена' }));
       } else {

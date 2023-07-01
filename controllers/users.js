@@ -1,5 +1,4 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const userModel = require('../models/user');
 const signToken = require('../utils/jwtAuth').signToken;
 
@@ -21,7 +20,6 @@ const getUsers = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'По указанному id пользователь не найден' });
-      console.log(err);
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Внутренняя ошибка сервера',
@@ -57,6 +55,7 @@ const createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
 
   bcrypt.hash(password, 10).then(function (hash) {
+
     userModel.create({ name, about, avatar, email, password: hash })
       .then((user) => {
 
