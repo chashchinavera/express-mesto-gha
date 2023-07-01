@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const userModel = require('../models/user');
-const signToken = require('../utils/jwtAuth').signToken;
+const {signToken} = require('../utils/jwtAuth').signToken;
 
 const {
   CREATED,
@@ -52,9 +52,12 @@ const getUserById = (req, res) => {
 };
 
 const createUser = (req, res) => {
+
   const { name, about, avatar, email, password } = req.body;
 
-  bcrypt.hash(password, 10).then(function (hash) {
+  bcrypt.hash(password, 10)
+
+  .then(function (hash) {
 
     userModel.create({ name, about, avatar, email, password: hash })
       .then((user) => {
