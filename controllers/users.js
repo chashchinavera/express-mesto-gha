@@ -1,52 +1,27 @@
 const bcrypt = require('bcryptjs');
 const userModel = require('../models/user');
 const { signToken } = require('../utils/jwtAuth').signToken;
-
-const {
-  CREATED,
-  ERROR_CODE,
-  UNAUTHORIZED,
-  NOT_FOUND,
-  INTERNAL_SERVER_ERROR,
-  MONGO_DUPLICATE_KEY_ERROR,
-  CONFLICT_ERROR,
-} = require('../utils/statusCode');
+const ConflictStatusError = require('../errors/ConflictStatusError');
+const BadRequestStatusError = require('../errors/BadRequestStatusError');
+const UnauthorizedStatusError = require('../errors/UnauthorizedStatusError');
+const NotFoundStatusError = require('../errors/NotFoundStatusError');
 
 const getUsers = (req, res) => {
   userModel.find({})
     .then((users) => {
       res.send({ data: users });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'По указанному id пользователь не найден' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'Внутренняя ошибка сервера',
-          err: err.message,
-          stack: err.stack,
-        });
-      }
-    });
+    .catch(next);
 };
 
 const getUserById = (req, res) => {
   userModel.findById(req.params.user_id)
-    .orFail(new Error('Not found'))
-    .then((user) => {
-      res.send({ data: user });
-    })
+    .then((user) => sendUser(res, user))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'По указанному id пользователь не найден' });
-      } else if (err.message === 'Not Found') {
-        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
+      if (err instanceof CastError) {
+        next(new BadRequestStatusError('По указанному id пользователь не найден'));
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'Внутренняя ошибка сервера',
-          err: err.message,
-          stack: err.stack,
-        });
+        next(err);
       }
     });
 };
@@ -62,7 +37,7 @@ const createUser = (req, res) => {
 
   bcrypt.hash(password, 10)
 
-    .then(function (hash) {
+    .then((hash) => {
       userModel.create({
         name,
         about,
@@ -74,67 +49,32 @@ const createUser = (req, res) => {
           res.status(CREATED).send(user);
         })
         .catch((err) => {
-          if (err.name === 'ValidationError') {
-            res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-          } else if (err.code === MONGO_DUPLICATE_KEY_ERROR) {
-            res.status(CONFLICT_ERROR).send({ message: 'Такой пользователь уже существует' });
+          if (err instanceof ValidationError) {
+            next(new BadRequestStatusError('Переданы некорректные данные'));
+          } else if (err.code === 11000) {
+            next(new ConflictStatusError('Такой пользователь уже существует'));
           } else {
-            res.status(INTERNAL_SERVER_ERROR).send({
-              message: 'Внутренняя ошибка сервера',
-              err: err.message,
-              stack: err.stack,
-            });
+            next(err);
           }
         });
     });
 };
 
-const updateProfile = (req, res, next) => {
+const updateData = (req, res, next) => {
   userModel.findByIdAndUpdate(req.user._id, req.body)
-    .orFail(new Error('Not found'))
-    .then((user) => {
-      res.send({ data: user });
-    })
+    .then((user) => sendUser(res, user))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-      } else if (err.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'По указанному id пользователь не найден' });
-      } else if (err.message === 'Not Found') {
-        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
+      if (err instanceof ValidationError) {
+        next(new BadRequestStatusError('Переданы некорректные данные'));
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'Внутренняя ошибка сервера',
-          err: err.message,
-          stack: err.stack,
-        });
         next(err);
       }
     });
 };
 
-const updateAvatar = (req, res) => {
-  userModel.findByIdAndUpdate(req.user._id, req.body)
-    .orFail(new Error('Not found'))
-    .then((user) => {
-      res.send({ data: user });
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-      } else if (err.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'По указанному id пользователь не найден' });
-      } else if (err.message === 'Not Found') {
-        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'Внутренняя ошибка сервера',
-          err: err.message,
-          stack: err.stack,
-        });
-      }
-    });
-};
+const updateProfile = (req, res, next) => updateData(req, res, next);
+
+const updateAvatar = (req, res, next) => updateData(req, res, next);
 
 const login = (req, res) => {
   const { email, password } = req.body;
@@ -146,7 +86,7 @@ const login = (req, res) => {
     })
     .then(([user, isEqual]) => {
       if (!isEqual) {
-        res.status(UNAUTHORIZED).send({ message: 'Неверный логин или пароль' });
+        next(new UnauthorizedStatusError('Неверный логин или пароль'));
         return;
       }
 
@@ -155,21 +95,11 @@ const login = (req, res) => {
 
       res.cookie('token', token, {
         httpOnly: true,
+        maxAge: 3600000 * 24 * 7,
       });
-      res.status(200).send({ token });
     })
 
-    .catch((err) => {
-      if (err.message === 'Unauthorized') {
-        res.status(UNAUTHORIZED).send({ message: 'Неверный логин или пароль' });
-        return;
-      }
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Внутренняя ошибка сервера',
-        err: err.message,
-        stack: err.stack,
-      });
-    });
+    .catch(next);
 };
 
 const getUser = (req, res, next) => {

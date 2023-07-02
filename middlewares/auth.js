@@ -1,8 +1,9 @@
 const { checkToken } = require('../utils/jwtAuth').checkToken;
+const UnauthorizedStatusError = require('../errors/UnauthorizedStatusError');
 
 const auth = (req, res, next) => {
   if (!req.headers.authorization) {
-    return res.status(401).send({ message: 'Пользователь не авторизован' });
+    return next(new UnauthorizedStatusError('Пользователь не авторизован'));
   }
 
   const token = req.headers.authorization.replace('Bearer ', '');
@@ -15,7 +16,7 @@ const auth = (req, res, next) => {
     };
     next();
   } catch (err) {
-    return res.status(401).send({ message: 'Пользователь не авторизован' });
+    return next(new UnauthorizedStatusError('Пользователь не авторизован'));
   }
 };
 

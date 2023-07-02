@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const SECRET_KEY = 'super_secret';
+const { SECRET_KEY } = require('../utils/constants');
 
 const checkToken = (token) => {
   return jwt.verify(token, SECRET_KEY);
