@@ -1,8 +1,12 @@
+const { ValidationError } = require('mongoose').Error;
 const cardModel = require('../models/card');
 const BadRequestStatusError = require('../errors/BadRequestStatusError');
 const NotFoundStatusError = require('../errors/NotFoundStatusError');
 const ForbiddenStatusError = require('../errors/ForbiddenStatusError');
-const { OK_STATUS } = require('../utils/constants');
+const {
+  OK_STATUS,
+  CREATED,
+ } = require('../utils/constants');
 
 const getCards = (req, res) => {
   cardModel.find({})
