@@ -6,7 +6,7 @@ const BadRequestStatusError = require('../errors/BadRequestStatusError');
 const UnauthorizedStatusError = require('../errors/UnauthorizedStatusError');
 const NotFoundStatusError = require('../errors/NotFoundStatusError');
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   userModel.find({})
     .then((users) => {
       res.send({ data: users });
@@ -14,7 +14,7 @@ const getUsers = (req, res) => {
     .catch(next);
 };
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   userModel.findById(req.params.user_id)
     .then((user) => sendUser(res, user))
     .catch((err) => {
@@ -26,7 +26,7 @@ const getUserById = (req, res) => {
     });
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const {
     name,
     about,
