@@ -18,7 +18,6 @@ const auth = (req, res, next) => {
   } catch (err) {
     return next(new UnauthorizedStatusError('Пользователь не авторизован'));
   }
-  return;
 };
 
 module.exports = auth;

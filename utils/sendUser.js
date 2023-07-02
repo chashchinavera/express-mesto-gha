@@ -1,3 +1,6 @@
+const NotFoundStatusError = require('../errors/NotFoundStatusError');
+const { OK_STATUS } = require('./constants');
+
 const sendUser = (res, data) => {
   if (!data) {
     throw new NotFoundStatusError('Запрашиваемый пользователь не найден');
