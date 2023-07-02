@@ -16,5 +16,6 @@ app.use(userRouter);
 app.use(cardRouter);
 
 app.use(errors());
+app.use(error);
 
 app.listen(PORT);
