@@ -1,12 +1,12 @@
 const bcrypt = require('bcryptjs');
-const { CastError } = require('mongoose').Error;
-
+const { CastError, ValidationError } = require('mongoose').Error;
 const userModel = require('../models/user');
 const { signToken } = require('../utils/jwtAuth').signToken;
 const ConflictStatusError = require('../errors/ConflictStatusError');
 const BadRequestStatusError = require('../errors/BadRequestStatusError');
 const UnauthorizedStatusError = require('../errors/UnauthorizedStatusError');
 const sendUser = require('../utils/sendUser');
+const { CREATED } = require('../utils/constants');
 
 const getUsers = (req, res, next) => {
   userModel.find({})
@@ -78,7 +78,7 @@ const updateProfile = (req, res, next) => updateData(req, res, next);
 
 const updateAvatar = (req, res, next) => updateData(req, res, next);
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   userModel.findOne({ email }).select('+password')
