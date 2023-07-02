@@ -6,7 +6,7 @@ const ForbiddenStatusError = require('../errors/ForbiddenStatusError');
 const {
   OK_STATUS,
   CREATED,
- } = require('../utils/constants');
+} = require('../utils/constants');
 
 const getCards = (req, res, next) => {
   cardModel.find({})
@@ -35,13 +35,12 @@ const deleteCard = (req, res, next) => {
   cardModel.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        throw new NotFoundStatusError('Запрашиваемая карточка не найдена')
+        throw new NotFoundStatusError('Запрашиваемая карточка не найдена');
       } else if (req.user._id === card.owner.toString()) {
         return cardModel.findByIdAndRemove(req.params.cardId)
           .then(() => res.status(OK_STATUS).send({ message: 'Карточка удалена' }));
       } else {
-        next(new ForbiddenStatusError('Вы не можете удалить не ваши карточки'));
-        return;
+        return next(new ForbiddenStatusError('Вы не можете удалить не ваши карточки'));
       }
     })
     .catch(next);
@@ -56,7 +55,7 @@ const likeCard = (req, res, next) => {
     .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
-        throw new NotFoundStatusError('Запрашиваемая карточка не найдена')
+        throw new NotFoundStatusError('Запрашиваемая карточка не найдена');
       }
       res.send({ data: card });
     })
@@ -71,7 +70,7 @@ const dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundStatusError('Запрашиваемая карточка не найдена')
+        throw new NotFoundStatusError('Запрашиваемая карточка не найдена');
       }
       res.send({ data: card });
     })

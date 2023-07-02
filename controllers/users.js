@@ -1,10 +1,12 @@
 const bcrypt = require('bcryptjs');
+const { CastError } = require('mongoose').Error;
+
 const userModel = require('../models/user');
 const { signToken } = require('../utils/jwtAuth').signToken;
 const ConflictStatusError = require('../errors/ConflictStatusError');
 const BadRequestStatusError = require('../errors/BadRequestStatusError');
 const UnauthorizedStatusError = require('../errors/UnauthorizedStatusError');
-const NotFoundStatusError = require('../errors/NotFoundStatusError');
+const sendUser = require('../utils/sendUser');
 
 const getUsers = (req, res, next) => {
   userModel.find({})
