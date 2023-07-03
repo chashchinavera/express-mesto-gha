@@ -33,7 +33,7 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   cardModel.findById(req.params.cardId)
-    .then((card) => {
+    .then((card, err) => {
       if (!card) {
         throw new NotFoundStatusError('Запрашиваемая карточка не найдена');
       } else if (err instanceof CastError) {
@@ -55,7 +55,7 @@ const likeCard = (req, res, next) => {
     { new: true },
   )
     .populate(['owner', 'likes'])
-    .then((card) => {
+    .then((card, err) => {
       if (!card) {
         throw new NotFoundStatusError('Запрашиваемая карточка не найдена');
       } else if (err instanceof CastError) {
@@ -72,7 +72,7 @@ const dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => {
+    .then((card, err) => {
       if (!card) {
         throw new NotFoundStatusError('Запрашиваемая карточка не найдена');
       } else if (err instanceof CastError) {
