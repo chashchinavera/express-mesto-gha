@@ -1,4 +1,4 @@
-const { checkToken } = require('../utils/jwtAuth').checkToken;
+const { checkToken } = require('../utils/jwtAuth');
 const UnauthorizedStatusError = require('../errors/UnauthorizedStatusError');
 
 const auth = (req, res, next) => {
