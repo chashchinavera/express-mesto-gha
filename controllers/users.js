@@ -97,7 +97,7 @@ const login = (req, res, next) => {
       res.cookie('token', token, {
         httpOnly: true,
         maxAge: 3600000 * 24 * 7,
-      });
+      }).send({ token });
     })
 
     .catch(next);
