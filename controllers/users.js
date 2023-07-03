@@ -18,7 +18,8 @@ const getUsers = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   userModel.findById(req.params.user_id)
-    .then((user) => sendUser(res, user))
+    .then((user) => sendUser(res, user)
+    )
     .catch((err) => {
       if (err instanceof CastError) {
         next(new BadRequestStatusError('По указанному id пользователь не найден'));
@@ -62,8 +63,9 @@ const createUser = (req, res, next) => {
     });
 };
 
-const updateData = (req, res, next) => {
-  userModel.findByIdAndUpdate(req.user._id, req.body)
+const updateProfile = (req, res, next) => {
+  const { name, about } = req.body;
+  userModel.findByIdAndUpdate(req.user._id, { name, about })
     .then((user) => sendUser(res, user))
     .catch((err) => {
       if (err instanceof ValidationError) {
@@ -74,9 +76,18 @@ const updateData = (req, res, next) => {
     });
 };
 
-const updateProfile = (res, user) => updateData(res, user);
-
-const updateAvatar = (req, res, next) => updateData(req, res, next);
+const updateAvatar = (req, res, next) => {
+  const { avatar } = req.body;
+  userModel.findByIdAndUpdate(req.user._id, { avatar })
+    .then((user) => sendUser(res, user))
+    .catch((err) => {
+      if (err instanceof ValidationError) {
+        next(new BadRequestStatusError('Переданы некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
+};
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
