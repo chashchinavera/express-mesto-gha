@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const { CastError, ValidationError } = require('mongoose').Error;
 const userModel = require('../models/user');
-const { signToken } = require('../utils/jwtAuth').signToken;
+const { signToken } = require('../utils/jwtAuth');
 const ConflictStatusError = require('../errors/ConflictStatusError');
 const BadRequestStatusError = require('../errors/BadRequestStatusError');
 const UnauthorizedStatusError = require('../errors/UnauthorizedStatusError');
@@ -82,9 +82,8 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
 
   userModel.findOne({ email }).select('+password')
-    .orFail(new Error('Unauthorized'))
     .then((user) => {
-      Promise.all([user, bcrypt.compare(password, user.password)]);
+      return Promise.all([user, bcrypt.compare(password, user.password)]);
     })
     .then(([user, isEqual]) => {
       if (!isEqual) {
@@ -99,6 +98,7 @@ const login = (req, res, next) => {
         httpOnly: true,
         maxAge: 3600000 * 24 * 7,
       });
+      res.status(200).send({ token });
     })
 
     .catch(next);
