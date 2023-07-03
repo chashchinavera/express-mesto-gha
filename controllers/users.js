@@ -18,8 +18,7 @@ const getUsers = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   userModel.findById(req.params.user_id)
-    .then((user) => sendUser(res, user)
-    )
+    .then((user) => sendUser(res, user))
     .catch((err) => {
       if (err instanceof CastError) {
         next(new BadRequestStatusError('По указанному id пользователь не найден'));
@@ -111,7 +110,13 @@ const login = (req, res, next) => {
       }).send({ token });
     })
 
-    .catch(next);
+    .catch((err) => {
+      if (err.message === 'Unauthorized') {
+        next(new UnauthorizedStatusError('Неверный логин или пароль'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 const getUser = (req, res, next) => {
