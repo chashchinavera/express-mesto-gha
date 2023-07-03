@@ -74,9 +74,9 @@ const updateData = (req, res, next) => {
     });
 };
 
-const updateProfile = (req, res, next) => {updateData(req, res, next)};
+const updateProfile = (res, user) => updateData(res, user);
 
-const updateAvatar = (req, res, next) => {updateData(req, res, next)};
+const updateAvatar = (req, res, next) => updateData(req, res, next);
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
