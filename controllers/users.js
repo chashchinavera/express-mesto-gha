@@ -74,9 +74,9 @@ const updateData = (req, res, next) => {
     });
 };
 
-const updateProfile = (req, res, next) => updateData(req, res, next);
+const updateProfile = (req, res, next) => {updateData(req, res, next)};
 
-const updateAvatar = (req, res, next) => updateData(req, res, next);
+const updateAvatar = (req, res, next) => {updateData(req, res, next)};
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
@@ -98,7 +98,6 @@ const login = (req, res, next) => {
         httpOnly: true,
         maxAge: 3600000 * 24 * 7,
       });
-      res.status(200).send({ token });
     })
 
     .catch(next);

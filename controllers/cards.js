@@ -1,4 +1,4 @@
-const { ValidationError } = require('mongoose').Error;
+const { ValidationError, CastError } = require('mongoose').Error;
 const cardModel = require('../models/card');
 const BadRequestStatusError = require('../errors/BadRequestStatusError');
 const NotFoundStatusError = require('../errors/NotFoundStatusError');
@@ -36,6 +36,8 @@ const deleteCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         throw new NotFoundStatusError('Запрашиваемая карточка не найдена');
+      } else if (err instanceof CastError) {
+        next(new BadRequestStatusError('По указанному id карточка не найдена'));
       } else if (req.user._id === card.owner.toString()) {
         return cardModel.findByIdAndRemove(req.params.cardId)
           .then(() => res.status(OK_STATUS).send({ message: 'Карточка удалена' }));
@@ -56,6 +58,8 @@ const likeCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         throw new NotFoundStatusError('Запрашиваемая карточка не найдена');
+      } else if (err instanceof CastError) {
+        next(new BadRequestStatusError('По указанному id карточка не найдена'));
       }
       res.send({ data: card });
     })
@@ -71,6 +75,8 @@ const dislikeCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         throw new NotFoundStatusError('Запрашиваемая карточка не найдена');
+      } else if (err instanceof CastError) {
+        next(new BadRequestStatusError('По указанному id карточка не найдена'));
       }
       res.send({ data: card });
     })
