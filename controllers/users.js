@@ -100,13 +100,7 @@ const login = (req, res, next) => {
       }).send({ token });
     })
 
-    .catch((err) => {
-      if (err.message === 'Unauthorized') {
-        next(new UnauthorizedStatusError('Неверный логин или пароль'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 const getUser = (req, res, next) => {
