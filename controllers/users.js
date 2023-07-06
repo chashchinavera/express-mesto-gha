@@ -93,7 +93,12 @@ const login = (req, res, next) => {
 
   userModel.findOne({ email }).select('+password')
     .then((user) => {
-      return Promise.all([user, bcrypt.compare(password, user.password)]);
+      if (!user) {
+        next(new UnauthorizedStatusError('Неверный логин или пароль'));
+        return;
+      } else {
+        return Promise.all([user, bcrypt.compare(password, user.password)]);
+      }
     })
     .then(([user, isEqual]) => {
       if (!isEqual) {
@@ -107,16 +112,10 @@ const login = (req, res, next) => {
       res.cookie('token', token, {
         httpOnly: true,
         maxAge: 3600000 * 24 * 7,
-      });
+      }).send({ email });
     })
 
-    .catch((err) => {
-      if (err.message === 'Unauthorized') {
-        next(new UnauthorizedStatusError('Неверный логин или пароль'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 const getUser = (req, res, next) => {
